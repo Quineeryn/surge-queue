@@ -2,6 +2,7 @@ package route
 
 import (
 	"myAPI/database"
+	"myAPI/pkg/module/activity"
 	"myAPI/pkg/module/user"
 	"myAPI/pkg/worker"
 	"net/http"
@@ -15,6 +16,9 @@ func InitRouter(mux *http.ServeMux, db *gorm.DB, mongoDB *mongo.Database, emailC
 
 	userRepo := user.NewRepository(db)
 	txManager := database.NewTxManager(db)
-	userService := user.NewService(userRepo, txManager)
+	activityRepo := activity.NewRepository(mongoDB)
+	activitySvc := activity.NewService(activityRepo)
+
+	userService := user.NewService(userRepo, txManager, activitySvc)
 	UserRoute(mux, userService, emailChan)
 }

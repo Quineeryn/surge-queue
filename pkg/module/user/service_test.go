@@ -18,7 +18,7 @@ type serviceContext struct {
 
 func (c *serviceContext) BeforeEach(t *testing.T) {
 	c.mockRepo = &MockRepository{}
-	c.svc = NewService(c.mockRepo, nil)
+	c.svc = NewService(c.mockRepo, nil, nil)
 }
 
 func TestService_Create(t *testing.T) {

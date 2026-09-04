@@ -4,6 +4,8 @@ import (
 	"context"
 	"myAPI/database"
 	"myAPI/pkg/entity"
+	"myAPI/pkg/module/activity"
+	"time"
 )
 
 type Service interface {
@@ -17,14 +19,16 @@ type Service interface {
 }
 
 type service struct {
-	repo      Repository
-	txManager database.TxManager
+	repo        Repository
+	txManager   database.TxManager
+	activitySvc activity.Service
 }
 
-func NewService(repo Repository, txManager database.TxManager) Service {
+func NewService(repo Repository, txManager database.TxManager, activitySvc activity.Service) Service {
 	return &service{
-		repo:      repo,
-		txManager: txManager,
+		repo:        repo,
+		txManager:   txManager,
+		activitySvc: activitySvc,
 	}
 }
 
@@ -62,7 +66,7 @@ func (s *service) Transfer(ctx context.Context, fromID, toID string, amount int)
 		return entity.ErrInvalidTransfer
 	}
 
-	return s.txManager.WithTransaction(ctx, func(ctx context.Context) error {
+	err := s.txManager.WithTransaction(ctx, func(ctx context.Context) error {
 		firstID, secondID := fromID, toID
 		if fromID > toID {
 			firstID, secondID = toID, fromID
@@ -96,7 +100,21 @@ func (s *service) Transfer(ctx context.Context, fromID, toID string, amount int)
 		if err := s.repo.UpdateBalance(ctx, toID, receiver.Balance+amount); err != nil {
 			return err
 		}
-
 		return nil
+
 	})
+	if err != nil {
+		return err
+	}
+
+	_ = s.activitySvc.Create(ctx, &entity.ActivityLogDto{
+		UserID:    fromID,
+		Action:    "TRANSFER",
+		Amount:    amount,
+		MetaData:  map[string]any{"to_user_id": toID},
+		CreatedAt: time.Now(),
+	})
+
+	return nil
+
 }
