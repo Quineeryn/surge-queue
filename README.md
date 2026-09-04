@@ -1,5 +1,7 @@
 # SurgeQueue
 
+[![CI Pipeline](https://github.com/Quineeryn/surge-queue/actions/workflows/ci.yml/badge.svg)](https://github.com/Quineeryn/surge-queue/actions/workflows/ci.yml)
+
 > **High-Throughput Traffic Burst & Atomic Transaction Engine in Go**
 
 SurgeQueue is a production-grade, high-concurrency transaction and traffic buffer engine built with **Go Clean Architecture**. Designed to withstand extreme traffic spikes (flash sales, ticket wars) without overselling inventory, crashing database pools, or dropping transactions.
