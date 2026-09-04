@@ -1,0 +1,19 @@
+# Environment & Secrets (SANGAT PENTING!)
+.env
+.env.*
+!.env.example
+*.md
+!README.md
+
+# File Pribadi & Media
+*.pdf
+*.jpeg
+*.jpg
+*.png
+
+# Binaries & OS
+*.exe
+bin/
+.idea/
+.vscode/
+tmp/

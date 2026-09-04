@@ -1,0 +1,11 @@
+with-expecter: True
+inpackage: True
+dir: "{{.InterfaceDir}}"
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+filename: "mock_{{.InterfaceName | snakecase | lower}}.go"
+all: True
+packages:
+  myAPI/pkg/module:
+    config:
+      recursive: True
