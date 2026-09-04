@@ -21,4 +21,5 @@ func InitRouter(mux *http.ServeMux, db *gorm.DB, mongoDB *mongo.Database, emailC
 
 	userService := user.NewService(userRepo, txManager, activitySvc)
 	UserRoute(mux, userService, emailChan)
+	ActivityLogRoute(mux, activitySvc)
 }
