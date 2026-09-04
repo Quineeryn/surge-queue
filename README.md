@@ -1,4 +1,4 @@
-# ⚡ SurgeQueue
+# SurgeQueue
 
 > **High-Throughput Traffic Burst & Atomic Transaction Engine in Go**
 
@@ -6,7 +6,7 @@ SurgeQueue is a production-grade, high-concurrency transaction and traffic buffe
 
 ---
 
-## 🏛️ Architectural Highlights
+## Architectural Highlights
 
 - **Zero-Overselling Concurrency Protection**: Utilizes PostgreSQL Pessimistic Locking (`SELECT ... FOR UPDATE`) with a mathematical **Lock Ordering Pattern** to guarantee 100% ACID atomicity and prevent deadlocks under reverse concurrent transfers.
 - **Asynchronous Traffic Buffer (Worker Pool)**: Protects relational database pools by buffering bursts into buffered Go channels and worker goroutines.
@@ -17,7 +17,7 @@ SurgeQueue is a production-grade, high-concurrency transaction and traffic buffe
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Language**: Go 1.24
 - **Relational Database**: PostgreSQL (GORM + Versioned Migrations)
@@ -27,7 +27,7 @@ SurgeQueue is a production-grade, high-concurrency transaction and traffic buffe
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
 - Go 1.24+
