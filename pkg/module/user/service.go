@@ -114,7 +114,8 @@ func (s *service) Transfer(ctx context.Context, fromID, toID string, amount int)
 		MetaData:  map[string]any{"to_user_id": toID},
 		CreatedAt: time.Now(),
 	})
-
+	_ = s.activitySvc.InvalidateTransferSummaryCache(ctx, fromID)
+	_ = s.activitySvc.InvalidateTransferSummaryCache(ctx, toID)
 	return nil
 
 }

@@ -10,6 +10,7 @@ type Config struct {
 	Port     string
 	DBDSN    string
 	MongoURI string
+	RedisURL string
 }
 
 func LoadConfig() *Config {
@@ -19,6 +20,7 @@ func LoadConfig() *Config {
 		Port:     getEnv("PORT", "8080"),
 		DBDSN:    getEnv("DB_DSN", ""),
 		MongoURI: getEnv("MONGO_URI", ""),
+		RedisURL: getEnv("REDIS_URL", "redis://localhost:6279"),
 	}
 }
 

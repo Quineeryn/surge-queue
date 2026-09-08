@@ -35,6 +35,11 @@ func (s *Server) Run() error {
 	}
 	mongoDB := mongoClient.Database("my_api")
 
+	redisClient, err := database.NewRedisClient(cfg.RedisURL)
+	if err != nil {
+		return err
+	}
+
 	emailChan := make(chan worker.EmailJob, 100)
 	for i := 1; i <= 3; i++ {
 		go worker.StartEmailWorker(i, emailChan)
@@ -42,7 +47,7 @@ func (s *Server) Run() error {
 
 	mux := http.NewServeMux()
 
-	route.InitRouter(mux, pgDB, mongoDB, emailChan)
+	route.InitRouter(mux, pgDB, mongoDB, emailChan, redisClient)
 
 	handler := middleware.Request(middleware.Logger(middleware.Recovery(mux)))
 	log.Printf("Server starting on port %s...", s.port)
