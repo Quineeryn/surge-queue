@@ -5,6 +5,7 @@ import (
 	"myAPI/database"
 	"myAPI/pkg/entity"
 	"myAPI/pkg/module/activity"
+	"myAPI/pkg/security"
 	"time"
 )
 
@@ -37,6 +38,12 @@ func (s *service) Create(ctx context.Context, req *entity.UserDto) (*entity.User
 	if err == nil {
 		return nil, entity.ErrEmailDuplicate
 	}
+
+	hashedPassword, err := security.HashPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+	req.Password = hashedPassword
 
 	return s.repo.Create(ctx, req)
 }

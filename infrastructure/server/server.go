@@ -6,8 +6,10 @@ import (
 	"myAPI/database"
 	"myAPI/pkg/adapter/route"
 	"myAPI/pkg/middleware"
+	"myAPI/pkg/security"
 	"myAPI/pkg/worker"
 	"net/http"
+	"time"
 )
 
 type Server struct {
@@ -40,6 +42,8 @@ func (s *Server) Run() error {
 		return err
 	}
 
+	jwtManager := security.NewJWTManager(cfg.JWTSecret, 24*time.Hour)
+
 	emailChan := make(chan worker.EmailJob, 100)
 	for i := 1; i <= 3; i++ {
 		go worker.StartEmailWorker(i, emailChan)
@@ -47,7 +51,7 @@ func (s *Server) Run() error {
 
 	mux := http.NewServeMux()
 
-	route.InitRouter(mux, pgDB, mongoDB, emailChan, redisClient)
+	route.InitRouter(mux, pgDB, mongoDB, emailChan, redisClient, jwtManager)
 
 	handler := middleware.Request(middleware.Logger(middleware.Recovery(mux)))
 	log.Printf("Server starting on port %s...", s.port)

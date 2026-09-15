@@ -6,6 +6,7 @@ import (
 	"log"
 	"myAPI/pkg/adapter/presenter"
 	"myAPI/pkg/entity"
+	"myAPI/pkg/middleware"
 	"myAPI/pkg/module/user"
 	"myAPI/pkg/shared/response"
 	"myAPI/pkg/shared/validator"
@@ -147,7 +148,13 @@ func CreateTransfer(svc user.Service) http.HandlerFunc {
 			return
 		}
 
-		if err := svc.Transfer(r.Context(), req.FromID, req.ToID, req.Amount); err != nil {
+		fromID, ok := r.Context().Value(middleware.UserIDKey).(string)
+		if !ok {
+			response.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		if err := svc.Transfer(r.Context(), fromID, req.ToID, req.Amount); err != nil {
 			response.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

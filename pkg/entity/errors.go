@@ -7,4 +7,5 @@ var (
 	ErrEmailDuplicate      = errors.New("email already exists")
 	ErrBalanceInsufficient = errors.New("balance is insufficient")
 	ErrInvalidTransfer     = errors.New("invalid transfer parameters")
+	ErrInvalidCredentials  = errors.New("invalid credentials")
 )
