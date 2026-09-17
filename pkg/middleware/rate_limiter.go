@@ -25,8 +25,8 @@ func RateLimiter(rdb *redis.Client, limit int64, window time.Duration) func(http
 					response.Error(w, "Too many requests", http.StatusTooManyRequests)
 					return
 				}
-				response.Error(w, "Rate limit exceeded. Please try again later.", http.StatusTooManyRequests)
 				next(w, r)
+				return
 			}
 			next(w, r)
 
