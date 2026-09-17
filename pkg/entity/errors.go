@@ -8,4 +8,5 @@ var (
 	ErrBalanceInsufficient = errors.New("balance is insufficient")
 	ErrInvalidTransfer     = errors.New("invalid transfer parameters")
 	ErrInvalidCredentials  = errors.New("invalid credentials")
+	ErrTransferInProgress  = errors.New("transfer is in progress")
 )

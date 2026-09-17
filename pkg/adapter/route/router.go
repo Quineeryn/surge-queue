@@ -22,10 +22,10 @@ func InitRouter(mux *http.ServeMux, db *gorm.DB, mongoDB *mongo.Database, emailC
 	activityRepo := activity.NewRepository(mongoDB)
 
 	activitySvc := activity.NewService(activityRepo, redis)
-	userService := user.NewService(userRepo, txManager, activitySvc)
+	userService := user.NewService(userRepo, txManager, activitySvc, redis)
 	authService := auth.NewService(userService, jwtManager)
 
-	UserRoute(mux, userService, emailChan, jwtManager)
+	UserRoute(mux, userService, emailChan, jwtManager, redis)
 	AuthRoute(mux, authService)
-	ActivityLogRoute(mux, activitySvc)
+	ActivityLogRoute(mux, activitySvc, jwtManager)
 }

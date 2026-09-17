@@ -21,7 +21,6 @@ type UserInput struct {
 }
 
 type TransferInput struct {
-	FromID string `json:"from_id" validate:"required"`
 	ToID   string `json:"to_id" validate:"required"`
 	Amount int    `json:"amount" validate:"required,gt=0"`
 }

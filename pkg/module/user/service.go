@@ -2,11 +2,14 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"myAPI/database"
 	"myAPI/pkg/entity"
 	"myAPI/pkg/module/activity"
 	"myAPI/pkg/security"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type Service interface {
@@ -23,13 +26,15 @@ type service struct {
 	repo        Repository
 	txManager   database.TxManager
 	activitySvc activity.Service
+	redis       *redis.Client
 }
 
-func NewService(repo Repository, txManager database.TxManager, activitySvc activity.Service) Service {
+func NewService(repo Repository, txManager database.TxManager, activitySvc activity.Service, redis *redis.Client) Service {
 	return &service{
 		repo:        repo,
 		txManager:   txManager,
 		activitySvc: activitySvc,
+		redis:       redis,
 	}
 }
 
@@ -69,11 +74,19 @@ func (s *service) FindByEmail(ctx context.Context, req *entity.UserDto) (*entity
 }
 
 func (s *service) Transfer(ctx context.Context, fromID, toID string, amount int) error {
+	lockKey := fmt.Sprintf("lock:transfer:%s", fromID)
+	acquired, err := s.redis.SetNX(ctx, lockKey, "locked", 5*time.Second).Result()
+
+	if err != nil || !acquired {
+		return entity.ErrTransferInProgress
+	}
+	defer s.redis.Del(ctx, lockKey)
+
 	if amount <= 0 || fromID == toID {
 		return entity.ErrInvalidTransfer
 	}
 
-	err := s.txManager.WithTransaction(ctx, func(ctx context.Context) error {
+	if err := s.txManager.WithTransaction(ctx, func(ctx context.Context) error {
 		firstID, secondID := fromID, toID
 		if fromID > toID {
 			firstID, secondID = toID, fromID
@@ -109,8 +122,7 @@ func (s *service) Transfer(ctx context.Context, fromID, toID string, amount int)
 		}
 		return nil
 
-	})
-	if err != nil {
+	}); err != nil {
 		return err
 	}
 

@@ -155,10 +155,14 @@ func CreateTransfer(svc user.Service) http.HandlerFunc {
 		}
 
 		if err := svc.Transfer(r.Context(), fromID, req.ToID, req.Amount); err != nil {
+			if errors.Is(err, entity.ErrTransferInProgress) {
+				response.Error(w, "Transfer is in progress", http.StatusTooManyRequests)
+				return
+			}
 			response.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		response.SuccessNoConttent(w, http.StatusOK, "Transfer successfull")
+		response.SuccessNoConttent(w, http.StatusCreated, "Transfer successfull")
 	}
 }
